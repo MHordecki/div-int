@@ -174,6 +174,22 @@ impl<N: core::ops::Neg, const D: u64> core::ops::Neg for DivInt<N, D> {
     }
 }
 
+impl<N: core::ops::Shr, const D: u64> core::ops::Shr for DivInt<N, D> {
+    type Output = DivInt<N::Output, D>;
+
+    fn shr(self, rhs: Self) -> Self::Output {
+        DivInt::<N::Output, D>::from_numerator(self.0.shr(rhs.0))
+    }
+}
+
+impl<N: core::ops::Shl, const D: u64> core::ops::Shl for DivInt<N, D> {
+    type Output = DivInt<N::Output, D>;
+
+    fn shl(self, rhs: Self) -> Self::Output {
+        DivInt::<N::Output, D>::from_numerator(self.0.shl(rhs.0))
+    }
+}
+
 impl<N: num_traits::WrappingAdd, const D: u64> DivInt<N, D> {
     /// Wrapping (modular) addition. Computes `self + rhs`, wrapping around at the boundary of the type.
     ///
@@ -219,6 +235,93 @@ impl<N: num_traits::WrappingMul, const D: u64> DivInt<N, D> {
     }
 }
 
+impl<N: num_traits::WrappingNeg, const D: u64> DivInt<N, D> {
+    /// Wrapping negation. Computes `-self`, wrapping around at the boundary of the type.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(div_int!(10i8 / 5).wrapping_neg(), div_int!(-10i8 / 5));
+    /// assert_eq!(div_int!(-128i8 / 5).wrapping_neg(), div_int!(-128i8 / 5));
+    /// ```
+    pub fn wrapping_neg(self) -> Self {
+        Self(self.0.wrapping_neg())
+    }
+}
+
+impl<N: num_traits::FromBytes, const D: u64> DivInt<N, D> {
+    /// Creates a `DivInt` from its representation as a byte array in big endian.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::{DivInt, div_int};
+    ///
+    /// assert_eq!(DivInt::<u16, 50>::from_be_bytes(&[1, 2]), div_int!(258u16 / 50));
+    /// ```
+    pub fn from_be_bytes(bytes: &N::Bytes) -> Self {
+        Self(N::from_be_bytes(bytes))
+    }
+
+    /// Creates a `DivInt` from its representation as a byte array in little endian.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::{DivInt, div_int};
+    ///
+    /// assert_eq!(DivInt::<u16, 50>::from_le_bytes(&[1, 2]), div_int!(513u16 / 50));
+    /// ```
+    pub fn from_le_bytes(bytes: &N::Bytes) -> Self {
+        Self(N::from_le_bytes(bytes))
+    }
+
+    /// Creates a `DivInt` from its representation as a byte array in native endianness.
+    pub fn from_ne_bytes(bytes: &N::Bytes) -> Self {
+        Self(N::from_ne_bytes(bytes))
+    }
+}
+
+impl<N: num_traits::Signed, const D: u64> DivInt<N, D> {
+    /// Computes the absolute value of `self`.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(div_int!(5i8 / 50).abs(), div_int!(5i8 / 50));
+    /// assert_eq!(div_int!(-5i8 / 50).abs(), div_int!(5i8 / 50));
+    /// ```
+    pub fn abs(&self) -> Self {
+        Self(self.0.abs())
+    }
+
+    /// Returns `true` if `self` is positive and `false` if the numerator is zero or negative.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(div_int!(5i8 / 50).is_positive(), true);
+    /// assert_eq!(div_int!(-10i8 / 50).is_positive(), false);
+    /// ```
+    pub fn is_positive(&self) -> bool {
+        self.0.is_positive()
+    }
+
+    /// Returns `true` if `self` is negative and `false` if the numerator is zero or positive.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(div_int!(5i8 / 50).is_negative(), false);
+    /// assert_eq!(div_int!(-10i8 / 50).is_negative(), true);
+    /// ```
+    pub fn is_negative(&self) -> bool {
+        self.0.is_negative()
+    }
+}
+
 macro_rules! impl_num_op_trait {
     ($ty:ident, $op:ident) => {
         impl<N: num_traits::$ty, const D: u64> num_traits::$ty for DivInt<N, D> {
@@ -232,6 +335,24 @@ macro_rules! impl_num_op_trait {
 impl_num_op_trait!(WrappingAdd, wrapping_add);
 impl_num_op_trait!(WrappingSub, wrapping_sub);
 impl_num_op_trait!(WrappingMul, wrapping_mul);
+
+impl<N: num_traits::WrappingNeg, const D: u64> num_traits::WrappingNeg for DivInt<N, D> {
+    fn wrapping_neg(&self) -> Self {
+        Self(self.0.wrapping_neg())
+    }
+}
+
+impl<N: num_traits::FromBytes, const D: u64> num_traits::FromBytes for DivInt<N, D> {
+    type Bytes = N::Bytes;
+
+    fn from_be_bytes(bytes: &Self::Bytes) -> Self {
+        Self(N::from_be_bytes(bytes))
+    }
+
+    fn from_le_bytes(bytes: &Self::Bytes) -> Self {
+        Self(N::from_le_bytes(bytes))
+    }
+}
 
 /// Helper trait for converting `f64` to integer types.
 pub trait FromF64Approx: Sized {
