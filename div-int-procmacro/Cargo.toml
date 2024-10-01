@@ -1,6 +1,6 @@
 [package]
 name = "div-int-procmacro"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Mike Hordecki <mike@hordecki.com>"]
 description = "Proc macro implementation for the div-int crate."
