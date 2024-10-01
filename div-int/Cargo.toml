@@ -6,6 +6,7 @@ authors = ["Mike Hordecki <mike@hordecki.com>"]
 description = "Rational numbers with a compile-time denominator."
 license = "MPL-2.0"
 repository = "https://github.com/MHordecki/div-int"
+documentation = "https://docs.rs/div-int"
 categories = ["data-structures", "no-std"]
 
 [features]
