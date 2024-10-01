@@ -1,0 +1,16 @@
+[package]
+name = "div-int"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+serde = { version = "1", optional = true, default-features = false }
+div-int-procmacro = {path="../div-int-procmacro"}
+num-traits = { version = "0.2", default-features = false }
+
+[dev-dependencies]
+serde_json = "1"
+serde = { version = "*", features = ["derive"] }
