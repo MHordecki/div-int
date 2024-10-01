@@ -24,6 +24,8 @@
 //! * `serde` - adds serialization support. [Read more][`serde`].
 #![warn(missing_docs)]
 #![no_std]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+
 extern crate alloc;
 
 use core::fmt::{Debug, Formatter};
