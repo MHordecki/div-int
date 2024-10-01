@@ -117,7 +117,7 @@ impl<N: Copy, const D: u64> DivInt<N, D> {
 }
 
 impl<N: Debug, const D: u64> Debug for DivInt<N, D> {
-    /// Implements.
+    /// Implements the `Debug` trait.
     ///
     /// # Example
     /// ```
@@ -131,6 +131,20 @@ impl<N: Debug, const D: u64> Debug for DivInt<N, D> {
         f.write_str(" / ")?;
         D.fmt(f)?;
         f.write_str(")")
+    }
+}
+
+impl<N: Copy + Into<f64>, const D: u64> core::fmt::Display for DivInt<N, D> {
+    /// Implements the `Display` trait.
+    ///
+    /// # Example
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(format!("{}", div_int!(10 / 50)), "0.2");
+    /// ```
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        core::fmt::Display::fmt(&self.to_f64(), f)
     }
 }
 
