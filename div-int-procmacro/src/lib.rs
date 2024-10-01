@@ -1,4 +1,4 @@
-//! Proc macro implementation for the crate [`div-int`](http://docs.rs/div-int)
+//! Proc macro implementation for the crate [`div-int`](http://docs.rs/div-int).
 extern crate proc_macro;
 
 use std::fmt::{Display, Formatter};
