@@ -2,6 +2,10 @@
 name = "div-int-procmacro"
 version = "0.1.0"
 edition = "2021"
+authors = ["Mike Hordecki <mike@hordecki.com>"]
+description = "Proc macro implementation for the div-int crate."
+license = "MPL-2.0"
+repository = "https://github.com/MHordecki/div-int"
 
 [lib]
 proc-macro = true

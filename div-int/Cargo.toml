@@ -2,15 +2,20 @@
 name = "div-int"
 version = "0.1.0"
 edition = "2021"
+authors = ["Mike Hordecki <mike@hordecki.com>"]
+description = "Rational numbers with a compile-time denominator."
+license = "MPL-2.0"
+repository = "https://github.com/MHordecki/div-int"
+categories = ["data-structures", "no-std"]
 
 [features]
 serde = ["dep:serde"]
 
 [dependencies]
 serde = { version = "1", optional = true, default-features = false }
-div-int-procmacro = {path="../div-int-procmacro"}
+div-int-procmacro = { version = "0.1.0", path="../div-int-procmacro"}
 num-traits = { version = "0.2", default-features = false }
 
 [dev-dependencies]
 serde_json = "1"
-serde = { version = "*", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
