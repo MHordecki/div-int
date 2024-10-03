@@ -74,7 +74,7 @@ impl<N: Into<f64>, const D: u64> From<DivInt<N, D>> for f64 {
     }
 }
 
-impl<N: Copy + Into<f64>, const D: u64> DivInt<N, D> {
+impl<N: Into<f64>, const D: u64> DivInt<N, D> {
     /// Floating-point value of this `DivInt`.
     ///
     /// # Examples
