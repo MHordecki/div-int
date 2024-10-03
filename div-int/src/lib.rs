@@ -162,9 +162,6 @@ macro_rules! impl_core_op {
 
 impl_core_op!(Add, add);
 impl_core_op!(Sub, sub);
-impl_core_op!(Mul, mul);
-impl_core_op!(Div, div);
-impl_core_op!(Rem, rem);
 
 macro_rules! impl_core_assign_op {
     ($op:ident, $op_ident:ident) => {
@@ -178,9 +175,6 @@ macro_rules! impl_core_assign_op {
 
 impl_core_assign_op!(AddAssign, add_assign);
 impl_core_assign_op!(SubAssign, sub_assign);
-impl_core_assign_op!(MulAssign, mul_assign);
-impl_core_assign_op!(DivAssign, div_assign);
-impl_core_assign_op!(RemAssign, rem_assign);
 
 impl<N: core::ops::Neg, const D: u64> core::ops::Neg for DivInt<N, D> {
     type Output = DivInt<N::Output, D>;
@@ -233,21 +227,6 @@ impl<N: num_traits::WrappingSub, const D: u64> DivInt<N, D> {
     /// ```
     pub fn wrapping_sub(self, other: Self) -> Self {
         Self(self.0.wrapping_sub(&other.0))
-    }
-}
-
-impl<N: num_traits::WrappingMul, const D: u64> DivInt<N, D> {
-    /// Wrapping (modular) multiplication. Computes `self * rhs`, wrapping around at the boundary of the type.
-    ///
-    /// # Examples
-    /// ```
-    /// use div_int::div_int;
-    ///
-    /// assert_eq!(div_int!(10u8 / 5).wrapping_mul(div_int!(3u8 / 5)), div_int!(30u8 / 5));
-    /// assert_eq!(div_int!(10u8 / 5).wrapping_mul(div_int!(30u8 / 5)), div_int!(44u8 / 5));
-    /// ```
-    pub fn wrapping_mul(self, other: Self) -> Self {
-        Self(self.0.wrapping_mul(&other.0))
     }
 }
 
@@ -397,7 +376,6 @@ macro_rules! impl_num_op_wrapping_trait {
 
 impl_num_op_wrapping_trait!(WrappingAdd, wrapping_add);
 impl_num_op_wrapping_trait!(WrappingSub, wrapping_sub);
-impl_num_op_wrapping_trait!(WrappingMul, wrapping_mul);
 
 impl<N: num_traits::WrappingNeg, const D: u64> num_traits::WrappingNeg for DivInt<N, D> {
     fn wrapping_neg(&self) -> Self {
