@@ -252,7 +252,7 @@ impl<N: num_traits::WrappingMul, const D: u64> DivInt<N, D> {
 }
 
 impl<N: num_traits::WrappingNeg, const D: u64> DivInt<N, D> {
-    /// Wrapping negation. Computes `-self`, wrapping around at the boundary of the type.
+    /// Wrapping negation. Computes `-self`, wrapping around at the boundary of the numerator type.
     ///
     /// # Examples
     /// ```
@@ -263,6 +263,53 @@ impl<N: num_traits::WrappingNeg, const D: u64> DivInt<N, D> {
     /// ```
     pub fn wrapping_neg(self) -> Self {
         Self(self.0.wrapping_neg())
+    }
+}
+
+impl<N: num_traits::CheckedAdd, const D: u64> DivInt<N, D> {
+    /// Checked addition. Computes `self + rhs`, returning `None` if the result exceeds the boundary of the numerator type.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(div_int!(50u8 / 5).checked_add(div_int!(100u8 / _)), Some(div_int!(150u8 / _)));
+    /// assert_eq!(div_int!(50u8 / 5).checked_add(div_int!(250u8 / _)), None);
+    /// ```
+    pub fn checked_add(self, other: Self) -> Option<Self> {
+        self.0.checked_add(&other.0).map(Self)
+    }
+}
+
+impl<N: num_traits::CheckedSub, const D: u64> DivInt<N, D> {
+    /// Checked subtraction. Computes `self - rhs`, returning `None` if the result exceeds the boundary of the numerator type.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(div_int!(50u8 / 5).checked_sub(div_int!(40u8 / _)), Some(div_int!(10u8 / _)));
+    /// assert_eq!(div_int!(50u8 / 5).checked_sub(div_int!(60u8 / _)), None);
+    /// ```
+    pub fn checked_sub(self, other: Self) -> Option<Self> {
+        self.0.checked_sub(&other.0).map(Self)
+    }
+}
+
+impl<N: num_traits::CheckedNeg, const D: u64> DivInt<N, D> {
+    /// Checked negation. Computes `-self`, returning `None` if the result exceeds the boundary of the numerator type.
+    ///
+    /// # Examples
+    /// ```
+    /// use div_int::div_int;
+    ///
+    /// assert_eq!(div_int!(50u8 / 5).checked_neg(), None);
+    /// assert_eq!(div_int!(50i8 / 5).checked_neg(), Some(div_int!(-50i8 / 5)));
+    /// assert_eq!(div_int!(-128i8 / 5).checked_neg(), None);
+    /// assert_eq!(div_int!(127i8 / 5).checked_neg(), Some(div_int!(-127i8 / 5)) );
+    /// ```
+    pub fn checked_neg(self) -> Option<Self> {
+        self.0.checked_neg().map(Self)
     }
 }
 
@@ -338,7 +385,7 @@ impl<N: num_traits::Signed, const D: u64> DivInt<N, D> {
     }
 }
 
-macro_rules! impl_num_op_trait {
+macro_rules! impl_num_op_wrapping_trait {
     ($ty:ident, $op:ident) => {
         impl<N: num_traits::$ty, const D: u64> num_traits::$ty for DivInt<N, D> {
             fn $op(&self, v: &Self) -> Self {
@@ -348,13 +395,32 @@ macro_rules! impl_num_op_trait {
     }
 }
 
-impl_num_op_trait!(WrappingAdd, wrapping_add);
-impl_num_op_trait!(WrappingSub, wrapping_sub);
-impl_num_op_trait!(WrappingMul, wrapping_mul);
+impl_num_op_wrapping_trait!(WrappingAdd, wrapping_add);
+impl_num_op_wrapping_trait!(WrappingSub, wrapping_sub);
+impl_num_op_wrapping_trait!(WrappingMul, wrapping_mul);
 
 impl<N: num_traits::WrappingNeg, const D: u64> num_traits::WrappingNeg for DivInt<N, D> {
     fn wrapping_neg(&self) -> Self {
         Self(self.0.wrapping_neg())
+    }
+}
+
+macro_rules! impl_num_op_checked_trait {
+    ($ty:ident, $op:ident) => {
+        impl<N: num_traits::$ty, const D: u64> num_traits::$ty for DivInt<N, D> {
+            fn $op(&self, v: &Self) -> Option<Self> {
+                self.0.$op(&v.0).map(Self)
+            }
+        }
+    }
+}
+
+impl_num_op_checked_trait!(CheckedAdd, checked_add);
+impl_num_op_checked_trait!(CheckedSub, checked_sub);
+
+impl<N: num_traits::CheckedNeg, const D: u64> num_traits::CheckedNeg for DivInt<N, D> {
+    fn checked_neg(&self) -> Option<Self> {
+        self.0.checked_neg().map(Self)
     }
 }
 
